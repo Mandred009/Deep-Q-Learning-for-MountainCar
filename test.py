@@ -18,14 +18,24 @@ done=False
 env = gym.make("MountainCar-v0")
 env._max_episode_steps=200
 obs = env.reset()
-reward_list=[]
+obs=obs[0]
+reward_list=[0]
 while not done:
-    env.render()
+    # env.render()
     step+=1
     pred=actornet.predict(obs.reshape(-1,2))
     action=np.argmax(pred)
     print(action)
-    obs,reward,done,_=env.step(action)
-    reward_list.append(reward)
+    # print(env.step(action))
+    obs,reward,done,_,_=env.step(action)
+    # print(obs.shape)
+    reward_list.append(abs(reward)+reward_list[step-1])
 print("Ended at step",step)
 print("The total reward",sum(reward_list))
+plt.plot(list(range(1,step+1)), reward_list[1:], label='Reward')
+plt.xlabel('Steps')
+plt.ylabel('Reward')
+plt.title('Reward over Time (Steps)')
+plt.legend()
+plt.grid(True)
+plt.show()
